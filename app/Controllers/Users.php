@@ -17,7 +17,15 @@ class Users extends ResourceController
 
     public function index()
     {
-        //
+        $data = $this->usersModel->getUsers();
+
+        $response = [
+            'status' => 200,
+            'error' => null,
+            'data' => $data
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**
@@ -27,7 +35,7 @@ class Users extends ResourceController
      */
     public function show($id = null)
     {
-        //
+        
     }
 
     /**
