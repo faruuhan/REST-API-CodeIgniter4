@@ -47,19 +47,25 @@ class Users extends ResourceController
      */
     public function create()
     {
-        $this->usersModel->save([
+
+        if(!$this->usersModel->save([
             'user_name' => $this->request->getVar('user_name'),
             'user_email' => $this->request->getVar('user_email'),
-            'user_password' => password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
-        ]);
+            'user_password' => !$this->request->getVar('user_password') || strlen($this->request->getVar('user_password')) < 8  ? $this->request->getVar('user_password')  : password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
+        ])){
+            return $this->fail($this->usersModel->errors());
+        }
 
         $response = [
             'status'   => 201,
             'error'    => null,
-            'messages' => 'Data berhasil ditambahkan'
+            'messages' => [
+                'success' => 'Akun pengguna berhasil didaftarkan'
+            ]
         ];
 
-        return $this->respondCreated($response);
+        return $this->respondCreated($response, 'Success');
+
     }
 
     /**
