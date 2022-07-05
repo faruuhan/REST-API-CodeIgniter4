@@ -35,7 +35,20 @@ class Users extends ResourceController
      */
     public function show($id = null)
     {
-        
+        $data = $this->usersModel->getUsers($id);
+
+        $response = [
+            'status' => 200,
+            'error' => null,
+            'data' => $data
+        ];
+
+        if($data){
+            return $this->respond($response, 200);
+        }else{
+            return $this->fail('data tidak ditemukan $id');
+        }
+
     }
 
     /**

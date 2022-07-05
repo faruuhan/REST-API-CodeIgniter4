@@ -32,12 +32,12 @@ class Users_model extends Model
         ]
     ];
 
-    public function getUsers($email = false){
-        if ($email == false) {
+    public function getUsers($id = false){
+        if ($id == false) {
             return $this->findAll();
         }
 
-        return $this->where(['user_email' => $email])->first();
+        return $this->where(['user_id' => $id])->first();
         
     }
 
