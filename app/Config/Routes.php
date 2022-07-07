@@ -37,6 +37,7 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
 $routes->resource('users');
+$routes->post('/users/(:any)', 'Users::create/$1');
 
 /*
  * --------------------------------------------------------------------
