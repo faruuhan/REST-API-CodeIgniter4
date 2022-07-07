@@ -14,10 +14,19 @@ class Users extends ResourceController
     {
         $this->usersModel = new Users_model();
     }
-
+    
     public function index()
     {
-        $data = $this->usersModel->getUsers();
+        $dataUsers = $this->usersModel->getUsers();
+
+        foreach ($dataUsers as $row) {
+            $data[] = [
+                'user_id' => intval($row['user_id']),
+                'user_name' => $row['user_name'],
+                'user_email' => $row['user_email'],
+                'user_status' => $row['user_status'],
+            ]; 
+        }
 
         $response = [
             'status' => 200,
@@ -30,7 +39,14 @@ class Users extends ResourceController
 
     public function show($id = null)
     {
-        $data = $this->usersModel->getUsers($id);
+        $dataUser = $this->usersModel->getUsers($id);
+
+        $data = [
+            'user_id' => intval($dataUser['user_id']),
+            'user_name' => $dataUser['user_name'],
+            'user_email' => $dataUser['user_email'],
+            'user_status' => $dataUser['user_status'],
+        ];
 
         $response = [
             'status' => 200,
@@ -68,7 +84,7 @@ class Users extends ResourceController
             $this->usersModel->save([
                 'user_name' => $this->request->getVar('user_name'),
                 'user_email' => $this->request->getVar('user_email'),
-                'user_password' => password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
+                'user_password' => md5($this->request->getVar('user_password')),
             ]);
 
             $response = [
@@ -114,7 +130,7 @@ class Users extends ResourceController
                 'user_id' => $id,
                 'user_name' => $this->request->getVar('user_name'),
                 'user_email' => $this->request->getVar('user_email'),
-                'user_password' => password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
+                'user_password' => md5($this->request->getVar('user_password')),
             ]);
 
             $response = [
