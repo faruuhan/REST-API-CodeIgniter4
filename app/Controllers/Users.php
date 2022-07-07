@@ -48,53 +48,85 @@ class Users extends ResourceController
 
     public function create($id = null)
     {
+        $validation = \Config\Services::validation();
 
         if(!$id){
-            if(!$this->usersModel->save([
+            if(!$this->validate([
+                'user_name' => [
+                    'rules' => 'required'
+                ],
+                'user_email' => [
+                    'rules' => 'required|is_unique[users.user_email]'
+                ],
+                'user_password' => [
+                    'rules' => 'required|min_length[8]'
+                ]
+            ])){
+                return $this->fail($validation->getErrors());
+            }
+
+            $this->usersModel->save([
                 'user_name' => $this->request->getVar('user_name'),
                 'user_email' => $this->request->getVar('user_email'),
-                'user_password' => !$this->request->getVar('user_password') || strlen($this->request->getVar('user_password')) < 8  ? $this->request->getVar('user_password')  : password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
-            ])){
-                return $this->fail($this->usersModel->errors());
-            }
-        $response = [
-            'status'   => 201,
-            'error'    => null,
-            'messages' => [
-                'success' => 'Akun pengguna berhasil didaftarkan'
-            ]
-        ];
+                'user_password' => password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
+            ]);
 
-        return $this->respondCreated($response, 'Success');
+            $response = [
+                'status'   => 201,
+                'error'    => null,
+                'messages' => [
+                    'success' => 'Akun pengguna berhasil didaftarkan'
+                ]
+            ];
+
+            return $this->respondCreated($response, 'Success');
+        
         }else{
 
-            $data = [
+
+            $userExixts = $this->usersModel->getUsers($id);
+
+            if(!$userExixts){
+                return $this->fail('User tidak ditemukan');
+            }
+
+            if($userExixts['user_email'] === $this->request->getVar('user_email')){
+                $rules_email = 'required';
+            }else{
+                $rules_email = 'required|is_unique[users.user_email]';
+            }
+            
+            if(!$this->validate([
+                'user_name' => [
+                    'rules' => 'required'
+                ],
+                'user_email' => [
+                    'rules' => $rules_email
+                ],
+                'user_password' => [
+                    'rules' => 'required|min_length[8]'
+                ]
+            ])){
+                return $this->fail($validation->getErrors());
+            }
+
+            $this->usersModel->save([
                 'user_id' => $id,
                 'user_name' => $this->request->getVar('user_name'),
                 'user_email' => $this->request->getVar('user_email'),
-                'user_password' => !$this->request->getVar('user_password') || strlen($this->request->getVar('user_password')) < 8  ? $this->request->getVar('user_password')  : password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
-            ];
-            
-            if(!$this->usersModel->save($data)){
-                return $this->fail($this->usersModel->errors());
-            }
+                'user_password' => password_hash($this->request->getVar('user_password'), PASSWORD_BCRYPT),
+            ]);
 
             $response = [
                 'status'   => 201,
                 'error'    => null,
                 'messages' => [
                     'success' => 'Akun berhasil di perbaharui',
-                    'data' => $data,
                 ]
             ];
 
             return $this->respond($response, 200);
         }
-    }
-
-    public function update($id = null)
-    {
-
     }
 
     public function delete($id = null)
@@ -105,7 +137,7 @@ class Users extends ResourceController
             return $this->fail('User tidak ditemukan');
         }
 
-        $this->usersModel->where('user_id', $id)->delete();
+        $this->usersModel->delete($id);
 
         $response = [
             'status'   => 201,
