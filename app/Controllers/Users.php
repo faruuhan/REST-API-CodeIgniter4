@@ -41,6 +41,10 @@ class Users extends ResourceController
     {
         $dataUser = $this->usersModel->getUsers($id);
 
+        if(!$dataUser){
+            return $this->fail('data tidak ditemukan dengan id '.$id);
+        }
+
         $data = [
             'user_id' => intval($dataUser['user_id']),
             'user_name' => $dataUser['user_name'],
@@ -54,11 +58,7 @@ class Users extends ResourceController
             'data' => $data
         ];
 
-        if($data){
-            return $this->respond($response, 200);
-        }else{
-            return $this->fail('data tidak ditemukan $id');
-        }
+        return $this->respond($response, 200);
 
     }
 
