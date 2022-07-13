@@ -27,11 +27,19 @@ class Products extends ResourceController
 
     public function create()
     {
+        $fileImg = $this->request->getFile('product_img');
+        if ($fileImg->getError() == 4) {
+            $nameImg = 'default.jpg';
+        } else {
+            $nameImg = $fileImg->getRandomName();
+            $fileImg->move('img', $nameImg);
+        }
+        
         $this->productsModel->save([
             'product_name' => $this->request->getVar('product_name'),
             'product_stock' => $this->request->getVar('product_stock'),
             'product_price' => $this->request->getVar('product_price'),
-            'product_img' => $this->request->getVar('product_img'),
+            'product_img' => $nameImg,
             'user_id' => 12,
         ]);
 
