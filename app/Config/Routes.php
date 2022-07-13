@@ -38,6 +38,7 @@ $routes->set404Override();
 $routes->get('/', 'Home::index');
 $routes->resource('users');
 $routes->post('/users/(:any)', 'Users::create/$1');
+$routes->resource('products');
 
 /*
  * --------------------------------------------------------------------
