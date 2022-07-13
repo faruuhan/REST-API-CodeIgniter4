@@ -39,7 +39,7 @@ class Products extends ResourceController
             'status'   => 201,
             'error'    => null,
             'messages' => [
-                'success' => 'Akun pengguna berhasil didaftarkan'
+                'success' => 'Product berhasil ditambahkan'
             ]
         ];
 
