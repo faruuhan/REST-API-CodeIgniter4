@@ -27,6 +27,26 @@ class Products extends ResourceController
 
     public function create()
     {
+        $validation = \Config\Services::validation();
+
+        if(!$this->validate([
+            'product_name' => [
+                'rules' => 'required',
+            ],
+            'product_stock' => [
+                'rules' => 'required|integer',
+            ],
+            'product_price' => [
+                'rules' => 'required|integer',
+            ],
+            'product_img' => [
+                'rules' => 'max_size[product_img,1024]|is_image[product_img]|mime_in[product_img,image/jpg,image/jpeg,image/png]',
+            ],
+        ])){
+            return $this->fail($validation->getErrors());
+        }
+
+
         $fileImg = $this->request->getFile('product_img');
         if ($fileImg->getError() == 4) {
             $nameImg = 'default.jpg';
